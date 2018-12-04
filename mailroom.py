@@ -7,6 +7,7 @@ new donations, and generates thank you letters.
 
 """
 
+from textwrap import dedent
 import math
 import re
 import sys
@@ -20,12 +21,6 @@ donor_db = [('Beyonce Knowles', [100.01, 201.02, 301.03]),
             ]
 
 
-def print_donors():
-    print("Donors in the donor database:")
-    for donor in donor_db:
-        print("  -", donor[0])
-
-
 def main_menu_selection():
     print("\nMain Menu")
     menu_selection = input("Please make a selection: "
@@ -37,8 +32,10 @@ def main_menu_selection():
     return menu_selection.strip().upper()
 
 
-def gen_letter(donor_name):
-    return "Thank you, {}. This much {}".format(donor_name[0], donor_name[1][-1])
+def print_donors():
+    print("Donors in the donor database:")
+    for donor in donor_db:
+        print("  -", donor[0])
 
 
 def send_thank_you():
@@ -71,12 +68,28 @@ def send_thank_you():
             break
 
     else:
-        print(f"\nCreating record for new donor: {donor_name}.")
+        print(f'\nCreated new donor record for "{donor_name}"\n')
         donor_name = [donor_name, []]
         donor_name[1].append(amount_float)
         donor_db.append(donor_name)
 
+    time.sleep(.5)
     print(gen_letter(donor_name))
+
+
+def gen_letter(donor_name):
+    print(' ------------------------------------------------------')
+
+    return dedent('''
+           Dear {},
+
+           Thank you for your generous gift of ${:.2f}.
+
+                              With gratitude,
+                              Tammy Do
+                              Development Manager
+            ------------------------------------------------------
+            '''.format(donor_name[0], donor_name[1][-1]))
 
 
 def verify_donor(donor_name):
@@ -87,21 +100,26 @@ def verify_donor(donor_name):
     return None
 
 
-
 def report():
-    print("pass report")
+    print("{:25s} | {:11s} | {:9s} | {:12s}".format("Donor Name", "Total Given", "Num Gifts", "Avg Gift"))
+    for donor, gifts in donor_db:
+        print("-" * 65)
+        avg = sum(gifts)/len(gifts)
+        print(f'{donor:<25} | ${sum(gifts):.2f}     | {len(gifts):<8} | ${avg:.2f}')
+
+    print()
+
 
 
 def quit_database():
     print("\nExiting the donor database.")
-    time.sleep(1)
+    time.sleep(.5)
     print("\nGoodbye.")
     sys.exit()
 
 if __name__ == "__main__":
     print("Welcome to the donor database.")
-    # running = True
-    while True: # why not just say "while true"?
+    while True:
         selection = main_menu_selection()
         if selection == 'T':
             send_thank_you()
@@ -111,4 +129,4 @@ if __name__ == "__main__":
             quit_database()
         else:
             print("\nInvalid selection.")
-            time.sleep(1)
+            time.sleep(.1)
